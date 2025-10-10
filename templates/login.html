@@ -6,10 +6,13 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+  <header class="main-header">
+    <h1>Cambridge Institute of Technology Bangalore</h1>
+    <div class="subtitle">Faculty Leave Management System</div>
+  </header>
   <div class="login-card">
     <div class="login-header">
-      <h1>🔐 Login</h1>
-      <p>Faculty Leave Management System</p>
+      <h1>Login</h1>
     </div>
     
     <form method="post" action="/login">
@@ -27,9 +30,9 @@
           <td>
             <select id="role" name="role" required>
               <option value="">Select your role</option>
-              <option value="faculty">👨‍🏫 Faculty</option>
-              <option value="hod">👨‍💼 HOD</option>
-              <option value="admin">👨‍💻 Principal</option>
+              <option value="faculty">Faculty</option>
+              <option value="hod">HOD</option>
+              <option value="admin">Principal</option>
             </select>
           </td>
         </tr>

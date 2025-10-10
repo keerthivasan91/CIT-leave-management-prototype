@@ -10,7 +10,7 @@
 <body>
   <nav class="navbar">
     <div class="navbar-content">
-      <a href="/home" class="navbar-brand">🏫 Faculty Leave Management</a>
+      <a href="/home" class="navbar-brand">Faculty Leave Management</a>
       <div class="navbar-user">
         <div class="user-info">
           <strong>{{ session.name or 'Guest' }}</strong><br>
@@ -23,27 +23,27 @@
 
   <div class="page-container">
     <aside class="sidebar">
-      <h3>📋 Menu</h3>
+      <h3 style="text-align: center;">  Menu</h3>
       <ul>
         {% block sidebar_menu %}
-        <li><a href="/home">🏠 Dashboard</a></li>
-        <li><a href="/apply">📝 Apply For Leave</a></li>
-        <li><a href="/leave_history">📊 Leave History</a></li>
-        <li><a href="/substitute_requests">🔄 Substitute Requests</a></li>
-        <li><a href="/holiday_calendar">📅 Holiday Calendar</a></li>
-        <li><a href="/profile">👤 Profile</a></li>
+        <li><a href="/home">Dashboard</a></li>
+        <li><a href="/apply">Apply For Leave</a></li>
+        <li><a href="/leave_history">Leave History</a></li>
+        <li><a href="/substitute_requests">Substitute Requests</a></li>
+        <li><a href="/holiday_calendar">Holiday Calendar</a></li>
+        <li><a href="/profile">Profile</a></li>
         {% if session.role == 'hod' %}
-        <li><a href="/hod">✅ HOD Approvals</a></li>
-        <li><a href="/hod/leave_balance">📊 Leave Balance</a></li>
+        <li><a href="/hod">HOD Approvals</a></li>
+        <li><a href="/hod/leave_balance">Leave Balance</a></li>
         {% endif %}
         {% if session.role == 'admin' %}
-        <li><a href="/admin">👑 Principal Approvals</a></li>
+        <li><a href="/admin">Principal Approvals</a></li>
         {% endif %}
         {% endblock %}
       </ul>
       
       <div class="stats">
-        <p><strong>👤 {{ session.name or 'Guest' }}</strong></p>
+        <p><strong>{{ session.name or 'Guest' }}</strong></p>
         <p>{{ session.role|capitalize if session.role else 'Not logged in' }}</p>
         <p>{{ session.department or 'N/A' }}</p>
       </div>
