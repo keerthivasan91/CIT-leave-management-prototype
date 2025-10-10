@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Principal Approvals - Faculty Leave Management{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px;">
+  <h2 style="color: #333; margin-bottom: 30px;">👑 Principal Approvals - All Leave Requests</h2>
+      {% if requests %}
+      <table class="table">
+        <tr><th>ID</th><th>Requester</th><th>Dept</th><th>Type</th><th>Start</th><th>End</th><th>Days</th><th>Substitute</th><th>Sub Status</th><th>HOD Status</th><th>Principal Status</th><th>Action</th></tr>
+        {% for r in requests %}
+        <tr>
+          <td>{{ r[0] }}</td>
+          <td>{{ r[16] }}</td>
+          <td>{{ r[2] }}</td>
+          <td>{{ r[3] }}</td>
+          <td>{{ r[4] or '' }}</td>
+          <td>{{ r[6] or '' }}</td>
+          <td>{{ r[9] }}</td>
+          <td>{{ r[17] or 'None' }}</td>
+          <td>{{ r[11] }}</td>
+          <td>{{ r[12] }}</td>
+          <td>{{ r[13] }}</td>
+          <td>
+            {% if r[13] == 'Pending' %}
+              <a href="/approve_principal/{{ r[0] }}">Approve</a> |
+              <a href="/reject_principal/{{ r[0] }}">Reject</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 10px;">
+          <p style="color: #666; font-size: 18px;">No requests found.</p>
+        </div>
+      {% endif %}
+</div>
+{% endblock %}

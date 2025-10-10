@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Faculty Leave Management{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <h1 style="color: #333; margin-bottom: 30px; text-align:center;">Welcome, {{ name }} ({{ role|capitalize }})</h1>
+  
+  <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin-bottom: 30px;">
+    <h3 style="color: #667eea; margin-bottom: 20px;">📋 Important Information</h3>
+    <ul style="list-style: none; padding: 0; font-size: 15px;">
+      <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef; color: #666;">
+        <span style="color: #667eea; margin-right: 10px;">•</span>You will receive one email each when the HOD and the Principal approves/rejects your application.
+      </li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef; color: #666;">
+        <span style="color: #667eea; margin-right: 10px;">•</span>You cannot club CL and EL.
+      </li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef; color: #666;">
+        <span style="color: #667eea; margin-right: 10px;">•</span>Apply for OOD while going out on College Work.
+      </li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef; color: #666;">
+        <span style="color: #667eea; margin-right: 10px;">•</span>Apply for SCL while going out on VTU work like Examination duty, VTU Meetings, etc.
+      </li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef; color: #666;">
+        <span style="color: #667eea; margin-right: 10px;">•</span>To Apply for PL, prior permission from the Principal is necessary and mention the reason clearly in the leave application.
+      </li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef; color: #666;">
+        <span style="color: #667eea; margin-right: 10px;">•</span>To Apply for Compensatory Off, mention the date for which Comp Off is being claimed in the reason in the leave application.
+      </li>
+      <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef; color: #666;">
+        <span style="color: #667eea; margin-right: 10px;">•</span>Apply for LOP when CL and EL are exhausted.
+      </li>
+      <li style="padding: 8px 0; color: #666;">
+        <span style="color: #667eea; margin-right: 10px;">•</span>Leave applications without valid reason are liable to be rejected.
+      </li>
+    </ul>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; text-align: center;">
+      <h3 style="margin: 0 0 15px 0;">📝 Quick Actions</h3>
+      <a href="/apply" style="color: white; text-decoration: none; font-weight: bold;">Apply for Leave →</a>
+    </div>
+    
+    <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 25px; border-radius: 10px; text-align: center;">
+      <h3 style="margin: 0 0 15px 0;">📊 View History</h3>
+      <a href="/leave_history" style="color: white; text-decoration: none; font-weight: bold;">Check Leave History →</a>
+    </div>
+    
+    {% if role == 'hod' %}
+    <div style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); color: white; padding: 25px; border-radius: 10px; text-align: center;">
+      <h3 style="margin: 0 0 15px 0;">✅ HOD Approvals</h3>
+      <a href="/hod" style="color: white; text-decoration: none; font-weight: bold;">Review Requests →</a>
+    </div>
+    {% endif %}
+    
+    {% if role == 'admin' %}
+    <div style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%); color: white; padding: 25px; border-radius: 10px; text-align: center;">
+      <h3 style="margin: 0 0 15px 0;">👑 Principal Approvals</h3>
+      <a href="/admin" style="color: white; text-decoration: none; font-weight: bold;">Final Approvals →</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+/* Optional: hover effect on quick action cards */
+div[style*="Quick Actions"], div[style*="View History"], div[style*="HOD Approvals"], div[style*="Principal Approvals"] {
+  transition: transform 0.2s;
+}
+div[style*="Quick Actions"]:hover,
+div[style*="View History"]:hover,
+div[style*="HOD Approvals"]:hover,
+div[style*="Principal Approvals"]:hover {
+  transform: translateY(-3px);
+}
+</style>
+{% endblock %}

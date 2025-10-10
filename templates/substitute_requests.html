@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Substitute Requests - Faculty Leave Management{% endblock %}
+
+{% block content %}
+<div class="history-container">
+  <h2>🔄 Substitute Requests (Last 10)</h2>
+  <p class="page-subtitle">Requests from colleagues asking you to substitute for their leave</p>
+
+  {% if requests %}
+    <div class="table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Request ID</th>
+            <th>Requester</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Days</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in requests %}
+            <tr>
+              <td>{{ r[1] }}</td>
+              <td>{{ r[10] }}</td>
+              <td>{{ r[3] }}</td>
+              <td>{{ r[4] or '' }}</td>
+              <td>{{ r[5] or '' }}</td>
+              <td>{{ r[6] }}</td>
+              <td>{{ r[7] or '' }}</td>
+              <td>{{ r[8] }}</td>
+              <td>
+                {% if r[8] == 'Pending' %}
+                  <a href="/accept_substitute/{{ r[0] }}" class="action-accept">Accept</a> |
+                  <a href="/reject_substitute/{{ r[0] }}" class="action-reject">Reject</a>
+                {% else %}
+                  Responded
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="no-records">
+      <p>No substitute requests found.</p>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.history-container {
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+
+.history-container h2 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 26px;
+  text-align: center;
+}
+
+.page-subtitle {
+  color: #666;
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 16px;
+}
+
+/* Table wrapper for horizontal scroll */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 900px;
+}
+
+.history-table th, .history-table td {
+  border: 1px solid #e0e0e0;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.history-table th {
+  background: #667eea;
+  color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.history-table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+.history-table tbody tr:hover {
+  background: #e2e6f0;
+}
+
+/* Action links */
+.action-accept {
+  color: green;
+  font-weight: 500;
+  text-decoration: none;
+}
+.action-accept:hover {
+  text-decoration: underline;
+}
+.action-reject {
+  color: red;
+  font-weight: 500;
+  text-decoration: none;
+}
+.action-reject:hover {
+  text-decoration: underline;
+}
+
+/* No-records message */
+.no-records {
+  text-align: center;
+  padding: 40px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  color: #666;
+  font-size: 18px;
+}
+
+/* Responsive for small screens */
+@media (max-width: 768px) {
+  .history-table th, .history-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  .history-container h2 {
+    font-size: 22px;
+  }
+  .page-subtitle {
+    font-size: 14px;
+  }
+}
+</style>
+{% endblock %}

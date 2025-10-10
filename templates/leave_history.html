@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Leave History - Faculty Leave Management{% endblock %}
+
+{% block content %}
+<div class="history-container">
+  <h2>📊 Leave History</h2>
+
+  <!-- Section 1: Leaves Applied by the User -->
+  <h3 style="margin-top: 30px; color:#667eea;">📝 Leaves You Applied</h3>
+  {% if applied_leaves %}
+    <div class="table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Start Date</th>
+            <th>Start Session</th>
+            <th>End Date</th>
+            <th>End Session</th>
+            <th>Days</th>
+            <th>Substitute</th>
+            <th>Sub Status</th>
+            <th>HOD Status</th>
+            <th>Principal Status</th>
+            <th>Final Status</th>
+            <th>Applied At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in applied_leaves %}
+            <tr>
+              <td>{{ l[0] }}</td>
+              <td>{{ l[1] }}</td>
+              <td>{{ l[2] or '' }}</td>
+              <td>{{ l[3] or '' }}</td>
+              <td>{{ l[4] or '' }}</td>
+              <td>{{ l[5] or '' }}</td>
+              <td>{{ l[7] }}</td>
+              <td>{{ l[14] or 'None' }}</td>
+              <td>{{ l[9] }}</td>
+              <td>{{ l[10] }}</td>
+              <td>{{ l[11] }}</td>
+              <td>{{ l[12] }}</td>
+              <td>{{ l[13] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="no-records">
+      <p>No leave records found for leaves you applied.</p>
+    </div>
+  {% endif %}
+
+  <!-- Section 2: Leaves Assigned as Substitute -->
+  <h3 style="margin-top: 40px; color:#28a745;">🔄 Substitute Requests Assigned to You</h3>
+  {% if substitute_requests %}
+    <div class="table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Request ID</th>
+            <th>Requester</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Days</th>
+            <th>Reason</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in substitute_requests %}
+            <tr>
+              <td>{{ r[0] }}</td>
+              <td>{{ r[10] }}</td>
+              <td>{{ r[3] }}</td>
+              <td>{{ r[4] or '' }}</td>
+              <td>{{ r[5] or '' }}</td>
+              <td>{{ r[6] }}</td>
+              <td>{{ r[7] or '' }}</td>
+              <td>{{ r[8] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="no-records">
+      <p>No substitute requests assigned to you.</p>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.history-container {
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+
+.history-container h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 26px;
+  text-align: center;
+}
+
+.history-container h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+/* Table wrapper for scroll on mobile */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 500px;
+}
+
+.history-table th, .history-table td {
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  text-align: center;
+}
+
+.history-table th {
+  background: #667eea;
+  color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.history-table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+.history-table tbody tr:hover {
+  background: #e2e6f0;
+}
+
+.no-records {
+  text-align: center;
+  padding: 30px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  color: #666;
+  font-size: 16px;
+}
+
+/* Responsive for small screens */
+@media (max-width: 768px) {
+  .history-table th, .history-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  .history-container h2 {
+    font-size: 22px;
+  }
+  .history-container h3 {
+    font-size: 18px;
+  }
+}
+</style>
+{% endblock %}

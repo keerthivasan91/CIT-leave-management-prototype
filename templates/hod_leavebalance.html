@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}HOD Approvals - Faculty Leave Management{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 30px auto;">
+  <!-- Leave Balance Section -->
+  <h2 style="color: #333; margin-bottom: 20px; text-align:center;">📊 Leave Balance - {{ department }}</h2>
+  {% if leave_balances %}
+    <div class="table-wrapper">
+      <table class="approval-table">
+        <thead>
+          <tr>
+            <th>Faculty</th>
+            <th>Total Applications</th>
+            <th>Approved</th>
+            <th>Rejected</th>
+            <th>Pending</th>
+            <th>Total Days Taken</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lb in leave_balances %}
+          <tr>
+            <td>{{ lb['name'] }}</td>
+            <td>{{ lb['total'] or 0 }}</td>
+            <td>{{ lb['approved'] or 0 }}</td>
+            <td>{{ lb['rejected'] or 0 }}</td>
+            <td>{{ lb['pending'] or 0 }}</td>
+            <td>{{ lb['total_days'] or 0 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="no-requests">
+      <p>No leave records found for your department.</p>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+/* Reuse existing styles for approval table */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.approval-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+  font-size: 14px;
+}
+
+.approval-table th, .approval-table td {
+  border: 1px solid #ddd;
+  padding: 12px 10px;
+  text-align: center;
+}
+
+.approval-table th {
+  background: #667eea;
+  color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.approval-table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+.approval-table tbody tr:hover {
+  background: #e2e6f0;
+}
+
+.approve-btn {
+  color: #28a745;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.approve-btn:hover {
+  text-decoration: underline;
+}
+
+.reject-btn {
+  color: #dc3545;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.reject-btn:hover {
+  text-decoration: underline;
+}
+
+.no-requests {
+  text-align: center;
+  padding: 40px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  color: #666;
+  font-size: 18px;
+}
+
+/* Responsive for small screens */
+@media (max-width: 768px) {
+  .approval-table th, .approval-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+}
+</style>
+{% endblock %}

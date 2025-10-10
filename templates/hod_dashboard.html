@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}HOD Approvals - Faculty Leave Management{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 30px auto;">
+  <h2 style="color: #333; margin-bottom: 30px; text-align:center;">✅ Approve Leave Requests ({{ department }})</h2>
+
+  {% if requests %}
+    <div class="table-wrapper">
+      <table class="approval-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Requester</th>
+            <th>Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Days</th>
+            <th>Substitute</th>
+            <th>Sub Status</th>
+            <th>HOD Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in requests %}
+          <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[14] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] or '' }}</td>
+            <td>{{ r[5] or '' }}</td>
+            <td>{{ r[8] }}</td>
+            <td>{{ r[15] or 'None' }}</td>
+            <td>{{ r[10] }}</td>
+            <td>{{ r[11] }}</td>
+            <td>
+              {% if r[11] == 'Pending' %}
+                <a href="/approve_hod/{{ r[0] }}" class="approve-btn">Approve</a> |
+                <a href="/reject_hod/{{ r[0] }}" class="reject-btn">Reject</a>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="no-requests">
+      <p>No requests for your department.</p>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.approval-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+  font-size: 14px;
+}
+
+.approval-table th, .approval-table td {
+  border: 1px solid #ddd;
+  padding: 12px 10px;
+  text-align: center;
+}
+
+.approval-table th {
+  background: #667eea;
+  color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.approval-table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+.approval-table tbody tr:hover {
+  background: #e2e6f0;
+}
+
+.approve-btn {
+  color: #28a745;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.approve-btn:hover {
+  text-decoration: underline;
+}
+
+.reject-btn {
+  color: #dc3545;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.reject-btn:hover {
+  text-decoration: underline;
+}
+
+.no-requests {
+  text-align: center;
+  padding: 40px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  color: #666;
+  font-size: 18px;
+}
+
+/* Responsive for small screens */
+@media (max-width: 768px) {
+  .approval-table th, .approval-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+}
+</style>
+{% endblock %}

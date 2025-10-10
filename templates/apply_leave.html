@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Apply for Leave - Faculty Leave Management{% endblock %}
+
+{% block content %}
+<div class="apply-leave-container">
+    <div class="apply-leave-card">
+        <h2>📝 Apply for Leave</h2>
+        <form method="post" action="/apply">
+            <label>Leave Type</label>
+            <select name="leave_type" required>
+                <option>Casual Leave</option>
+                <option>Earned Leave</option>
+                <option>OOD</option>
+                <option>Permitted Leave</option>
+                <option>Special Casual Leave</option>
+                <option>Loss of Pay Leave</option>
+                <option>Compensatory Off Leave</option>
+            </select>
+
+            <label>Start Date</label>
+            <input type="date" name="start_date" required>
+            
+            <label>Start Session</label>
+            <select name="start_session" required>
+                <option>Forenoon</option>
+                <option>Afternoon</option>
+            </select>
+
+            <label>End Date</label>
+            <input type="date" name="end_date" required>
+            
+            <label>End Session</label>
+            <select name="end_session" required>
+                <option>Forenoon</option>
+                <option>Afternoon</option>
+            </select>
+
+            <label>Days</label>
+            <input type="number" name="days" min="1" value="1" required>
+
+            <label>Reason</label>
+            <textarea name="reason" placeholder="Enter reason for leave" required></textarea>
+
+            <label>Alternate Arrangements Made</label>
+            <textarea name="alternate" placeholder="Mention alternate arrangements" required></textarea>
+
+            <label>Department for Substitute</label>
+            <select name="department_select" id="department_select" required>
+                <option value="">Select Department</option>
+            </select>
+
+            <label>Substitute Faculty</label>
+            <select name="substitute_user_id" id="substitute_user_id" required>
+                <option value="">Select Department First</option>
+            </select>
+
+            <button type="submit">Submit Application</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.apply-leave-container {
+    max-width: 650px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.apply-leave-card {
+    background: #ffffff;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.apply-leave-card h2 {
+    color: #333;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 24px;
+}
+
+.apply-leave-card label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+.apply-leave-card input[type="date"],
+.apply-leave-card input[type="number"],
+.apply-leave-card select,
+.apply-leave-card textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+    transition: border 0.2s;
+}
+
+.apply-leave-card input:focus,
+.apply-leave-card select:focus,
+.apply-leave-card textarea:focus {
+    border-color: #667eea;
+    outline: none;
+}
+
+.apply-leave-card textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.apply-leave-card button {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s;
+}
+
+.apply-leave-card button:hover {
+    background: linear-gradient(135deg, #5a6ddd 0%, #653b97 100%);
+}
+</style>
+
+<script>
+    // Load departments on page load
+    fetch('/api/branches')
+        .then(response => response.json())
+        .then(data => {
+            const departmentSelect = document.getElementById('department_select');
+            data.branches.forEach(department => {
+                const option = document.createElement('option');
+                option.value = department;
+                option.textContent = department;
+                departmentSelect.appendChild(option);
+            });
+        });
+
+    // Load staff when department is selected
+    document.getElementById('department_select').addEventListener('change', function() {
+        const department = this.value;
+        const staffSelect = document.getElementById('substitute_user_id');
+        
+        // Clear existing options
+        staffSelect.innerHTML = '<option value="">Select Faculty</option>';
+        
+        if (department) {
+            fetch(`/api/staff/${department}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.staff.forEach(staff => {
+                        const option = document.createElement('option');
+                        option.value = staff.id;
+                        option.textContent = staff.name;
+                        staffSelect.appendChild(option);
+                    });
+                });
+        }
+    });
+</script>
+{% endblock %}

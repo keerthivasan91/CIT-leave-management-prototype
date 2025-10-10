@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Login - Faculty Leave Management System</title>
+  <style>
+    /* Body & Container */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .login-card {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 450px;
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .login-header p {
+      color: #666;
+      font-size: 16px;
+    }
+
+    /* Table layout for form */
+    form table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 15px;
+    }
+    form table td:first-child {
+      width: 35%;
+      font-weight: 500;
+      color: #333;
+      vertical-align: middle;
+      padding-right: 10px;
+    }
+    form table td:last-child input,
+    form table td:last-child select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    form table td:last-child input:focus,
+    form table td:last-child select:focus {
+      border-color: #667eea;
+      outline: none;
+    }
+
+    /* Submit button */
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: transform 0.2s, background 0.3s;
+    }
+    .login-btn:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #5a6ddd 0%, #653b97 100%);
+    }
+
+    /* Error Message */
+    .error {
+      color: #dc3545;
+      text-align: center;
+      margin-top: 15px;
+      padding: 10px;
+      background: #f8d7da;
+      border-radius: 5px;
+    }
+
+    /* Back Link */
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .back-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media(max-width: 500px) {
+      form table td:first-child {
+        width: 40%;
+        font-size: 14px;
+      }
+      .login-card {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-header">
+      <h1>🔐 Login</h1>
+      <p>Faculty Leave Management System</p>
+    </div>
+    
+    <form method="post" action="/login">
+      <table>
+        <tr>
+          <td><label for="user_id">User ID</label></td>
+          <td><input type="text" id="user_id" name="user_id" placeholder="Enter your User ID" required></td>
+        </tr>
+        <tr>
+          <td><label for="password">Password</label></td>
+          <td><input type="password" id="password" name="password" placeholder="Enter your password" required></td>
+        </tr>
+        <tr>
+          <td><label for="role">Role</label></td>
+          <td>
+            <select id="role" name="role" required>
+              <option value="">Select your role</option>
+              <option value="faculty">👨‍🏫 Faculty</option>
+              <option value="hod">👨‍💼 HOD</option>
+              <option value="admin">👨‍💻 Principal</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>
