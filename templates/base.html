@@ -28,20 +28,22 @@
       <h3 style="text-align: center;">  Menu</h3>
       <ul>
         {% block sidebar_menu %}
-        <li><a href="/home">Dashboard</a></li>
-        <li><a href="/apply">Apply For Leave</a></li>
-        <li><a href="/leave_history">Leave History</a></li>
-        {% if session.role != 'staff' and session.role != 'admin' %}
-        <li><a href="/substitute_requests">Substitute Requests</a></li>
+        <li><a href="{{ url_for('home') }}" class="{% if active_page == 'home' %}active{% endif %}">Dashboard</a></li>
+        {% if session.role != 'admin' %}
+        <li><a href="/apply" class="{% if active_page == 'apply' %}active{% endif %}">Apply For Leave</a></li>
         {% endif %}
-        <li><a href="/holiday_calendar">Holiday Calendar</a></li>
-        <li><a href="/profile">Profile</a></li>
+        <li><a href="/leave_history" class="{% if active_page == 'leave_history' %}active{% endif %}">Leave History</a></li>
+        {% if session.role != 'staff' and session.role != 'admin' %}
+        <li><a href="/substitute_requests" class="{% if active_page == 'substitute_requests' %}active{% endif %}">Substitute Requests</a></li>
+        {% endif %}
+        <li><a href="/holiday_calendar" class="{% if active_page == 'holiday_calendar' %}active{% endif %}">Holiday Calendar</a></li>
+        <li><a href="/profile" class="{% if active_page == 'profile' %}active{% endif %}">Profile</a></li>
         {% if session.role == 'hod' %}
-        <li><a href="/hod">HOD Approvals</a></li>
-        <li><a href="/hod/leave_balance">Leave Balance</a></li>
+        <li><a href="/hod" class="{% if active_page == 'hod' %}active{% endif %}">HOD Approvals</a></li>
+        <li><a href="/hod/leave_balance" class="{% if active_page == 'leave_balance' %}active{% endif %}">Leave Balance</a></li>
         {% endif %}
         {% if session.role == 'admin' %}
-        <li><a href="/admin">Principal Approvals</a></li>
+        <li><a href="/admin" class="{% if active_page == 'admin' %}active{% endif %}">Principal Approvals</a></li>
         {% endif %}
         {% endblock %}
       </ul>
