@@ -2,4 +2,7 @@ Flask==3.0.3
 Flask-MySQLdb==2.0.0
 PyMySQL==1.1.1
 python-dotenv==1.0.1
-
+gunicorn
+psycopg2-binary
+requests
+supabase
