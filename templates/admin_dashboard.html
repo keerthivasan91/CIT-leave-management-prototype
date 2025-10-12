@@ -23,8 +23,8 @@
           <td>{{ r[13] }}</td>
           <td>
             {% if r[13] == 'Pending' %}
-              <a href="/approve_principal/{{ r[0] }}">Approve</a> |
-              <a href="/reject_principal/{{ r[0] }}">Reject</a>
+              <a href="/approve_principal/{{ r[0] }}" class="approve-btn">Approve</a> |
+              <a href="/reject_principal/{{ r[0] }}" class="reject-btn">Reject</a>
             {% else %}
               -
             {% endif %}
