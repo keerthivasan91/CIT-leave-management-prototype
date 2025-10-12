@@ -59,7 +59,7 @@ def home():
         "Only 15 days of casual leave allowed per semester.",
         "National holidays are preloaded in Holiday Calendar."
     ]
-    return render_template('index.html', name=name, role=role, info=info, department=dept)
+    return render_template('index.html', name=name, role=role, info=info, department=dept, active_page='home')
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -84,7 +84,7 @@ def login():
                 session['department'] = user[5]
                 return redirect(url_for('home'))
             error = "Invalid credentials for selected role"
-    return render_template('login.html', error=error)
+    return render_template('login.html', error=error, active_page='login')
 
 @app.route('/logout')
 def logout():
@@ -95,9 +95,11 @@ def logout():
 def apply():
     if 'user_id' not in session:
         return redirect(url_for('landing'))
+
     if request.method == 'POST':
         user_id = session['user_id']
         department = session.get('department')
+        role = session.get('role')  # get user role
         leave_type = request.form.get('leave_type', 'Casual')
         start_date = request.form['start_date'] or None
         start_session = request.form.get('start_session', 'Forenoon')
@@ -105,37 +107,54 @@ def apply():
         end_session = request.form.get('end_session', 'Afternoon')
         reason = request.form.get('reason','')
         days = int(request.form.get('days') or 1)
-        substitute_user_id = request.form.get('substitute_user_id', '')
+        substitute_user_id = request.form.get('substitute_user_id') or None
+
+        # Determine substitute_status
+        if role == 'staff' or not substitute_user_id:
+            sub_status = 'Not Applicable'
+            substitute_user_id = None  # make sure it's null
+        else:
+            sub_status = 'Pending'
 
         cur = mysql.connection.cursor()
-        cur.execute("""INSERT INTO leave_requests
-            (user_id, department, leave_type, start_date, start_session, end_date, end_session, reason, days, substitute_user_id)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-            (user_id, department, leave_type, start_date, start_session, end_date, end_session, reason, days, substitute_user_id))
+        cur.execute("""
+            INSERT INTO leave_requests
+            (user_id, department, leave_type, start_date, start_session, end_date, end_session,
+             reason, days, substitute_user_id, substitute_status)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (user_id, department, leave_type, start_date, start_session, end_date, end_session,
+              reason, days, substitute_user_id, sub_status))
         
         leave_id = cur.lastrowid
-        
-        # Create substitute request
-        if substitute_user_id:
-            cur.execute("""INSERT INTO substitute_requests
+
+        # Only create substitute request if faculty leave and a substitute is chosen
+        if role == 'faculty' and substitute_user_id:
+            cur.execute("""
+                INSERT INTO substitute_requests
                 (leave_request_id, requested_user_id)
-                VALUES (%s,%s)""",
-                (leave_id, substitute_user_id))
-        
+                VALUES (%s,%s)
+            """, (leave_id, substitute_user_id))
+
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('leave_history'))
-    return render_template('apply_leave.html')
 
-@app.route('/leave_history')
+    return render_template('apply_leave.html', active_page='apply')
+
+
+@app.route('/leave_history', methods=['GET'])
 def leave_history():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     user_id = session['user_id']
+    role = session.get('role')
+    department = session.get('department')
+    selected_department = request.args.get('department')  # for principal to filter by dept
+
     cur = mysql.connection.cursor()
-    
-    # 1. Leaves applied by the user
+
+    # 1️⃣ Leaves applied by the user (for all roles)
     cur.execute("""
         SELECT lr.id, lr.leave_type, lr.start_date, lr.start_session, lr.end_date, lr.end_session, 
                lr.reason, lr.days, lr.substitute_user_id, lr.substitute_status, lr.hod_status, 
@@ -148,7 +167,7 @@ def leave_history():
     """, (user_id,))
     applied_leaves = cur.fetchall()
 
-    # 2. Substitute requests assigned to the user
+    # 2️⃣ Substitute requests assigned to the user (only for faculty/HOD)
     cur.execute("""
         SELECT sr.id, lr.id as leave_id, lr.user_id, lr.leave_type, lr.start_date, lr.end_date, 
                lr.days, lr.reason, sr.status, sr.responded_at, u.name as requester_name
@@ -161,12 +180,58 @@ def leave_history():
     """, (user_id,))
     substitute_requests = cur.fetchall()
 
+    # 3️⃣ Department leave history (for HOD)
+    department_leaves = []
+    if role == 'hod':
+        cur.execute("""
+            SELECT lr.id, lr.leave_type, lr.start_date, lr.start_session, lr.end_date, lr.end_session, 
+                   lr.reason, lr.days, lr.substitute_user_id, lr.substitute_status, lr.hod_status, 
+                   lr.principal_status, lr.final_status, lr.applied_at, u1.name as requester_name, 
+                   u2.name as substitute_name
+            FROM leave_requests lr
+            LEFT JOIN users u1 ON lr.user_id = u1.user_id
+            LEFT JOIN users u2 ON lr.substitute_user_id = u2.user_id
+            WHERE u1.department=%s
+            ORDER BY lr.applied_at DESC
+        """, (department,))
+        department_leaves = cur.fetchall()
+
+    # 4️⃣ Institution leave history (for Principal)
+    institution_leaves = []
+    departments = []
+    if role == 'admin' or role == 'principal':
+        # Get all departments
+        cur.execute("SELECT DISTINCT department FROM users WHERE role='faculty'")
+        departments = [d[0] for d in cur.fetchall()]
+
+        query = """
+            SELECT lr.id, lr.leave_type, lr.start_date, lr.start_session, lr.end_date, lr.end_session, 
+                   lr.reason, lr.days, lr.substitute_user_id, lr.substitute_status, lr.hod_status, 
+                   lr.principal_status, lr.final_status, lr.applied_at, u1.name as requester_name, 
+                   u1.department, u2.name as substitute_name
+            FROM leave_requests lr
+            LEFT JOIN users u1 ON lr.user_id = u1.user_id
+            LEFT JOIN users u2 ON lr.substitute_user_id = u2.user_id
+        """
+        params = []
+        if selected_department:
+            query += " WHERE u1.department=%s"
+            params.append(selected_department)
+        query += " ORDER BY lr.applied_at DESC"
+        cur.execute(query, params)
+        institution_leaves = cur.fetchall()
+
     cur.close()
-    
+
     return render_template(
         'leave_history.html',
         applied_leaves=applied_leaves,
-        substitute_requests=substitute_requests
+        substitute_requests=substitute_requests,
+        department_leaves=department_leaves,
+        institution_leaves=institution_leaves,
+        departments=departments,
+        selected_department=selected_department,
+        active_page='leave_history'
     )
 
 @app.route('/substitute_requests')
@@ -184,7 +249,7 @@ def substitute_requests():
                    ORDER BY sr.id DESC LIMIT 10""", (user_id,))
     requests = cur.fetchall()
     cur.close()
-    return render_template('substitute_requests.html', requests=requests)
+    return render_template('substitute_requests.html', requests=requests, active_page='substitute_requests')
 
 @app.route('/accept_substitute/<int:request_id>')
 def accept_substitute(request_id):
@@ -222,7 +287,7 @@ def holiday_calendar():
     cur.execute("SELECT id, date, name FROM holidays ORDER BY date")
     holidays = cur.fetchall()
     cur.close()
-    return render_template('holiday_calendar.html', holidays=holidays)
+    return render_template('holiday_calendar.html', holidays=holidays, active_page='holiday_calendar')
 
 @app.route('/profile')
 def profile():
@@ -241,7 +306,7 @@ def profile():
     """, (user_id,))
     stats = cur.fetchone()
     cur.close()
-    return render_template('profile.html', stats=stats)
+    return render_template('profile.html', stats=stats, active_page='profile')
 
 # HOD dashboard - same UI but extra Approve tab
 @app.route('/hod')
@@ -258,11 +323,11 @@ def hod_dashboard():
                    FROM leave_requests lr 
                    LEFT JOIN users u1 ON lr.user_id = u1.user_id
                    LEFT JOIN users u2 ON lr.substitute_user_id = u2.user_id
-                   WHERE lr.department=%s AND lr.substitute_status='Accepted' AND lr.hod_status='Pending'
+                   WHERE lr.department=%s AND lr.substitute_status IN ('Accepted','Not Applicable') AND lr.hod_status='Pending'
                    ORDER BY lr.applied_at DESC""", (dept,))
     requests = cur.fetchall()
     cur.close()
-    return render_template('hod_dashboard.html', requests=requests, department=dept)
+    return render_template('hod_dashboard.html', requests=requests, department=dept, active_page='hod')
 
 @app.route('/hod/leave_balance')
 def hod_leave_balance():
@@ -288,7 +353,7 @@ def hod_leave_balance():
     leave_balances = [dict(zip([col[0] for col in cur.description], row)) for row in cur.fetchall()]
 
     cur.close()
-    return render_template('hod_leavebalance.html', leave_balances=leave_balances, department=dept)
+    return render_template('hod_leavebalance.html', leave_balances=leave_balances, department=dept, active_page='leave_balance')
 
 
 @app.route('/approve_hod/<int:rid>')
@@ -314,6 +379,8 @@ def reject_hod(rid):
 # Admin dashboard - view all
 @app.route('/admin')
 def admin_dashboard():
+    departments = ['CSE', 'ECE', 'ME']  # dynamically fetch from DB
+    selected_department = request.args.get('department', '')
     if 'user_id' not in session:
         return redirect(url_for('login'))
     if session.get('role') != 'admin':
@@ -328,8 +395,16 @@ def admin_dashboard():
                    WHERE lr.hod_status='Approved' AND lr.principal_status='Pending'
                    ORDER BY lr.applied_at DESC""", ())
     requests = cur.fetchall()
+    query = "SELECT lr.*, u1.name, u2.name FROM leave_requests lr LEFT JOIN users u1 ON lr.user_id=u1.user_id LEFT JOIN users u2 ON lr.substitute_user_id=u2.user_id"
+    params = []
+    if selected_department:
+        query += " WHERE lr.department=%s"
+        params.append(selected_department)
+    query += " ORDER BY lr.applied_at DESC"
+    cur.execute(query, params)
+    institution_leaves = cur.fetchall()
     cur.close()
-    return render_template('admin_dashboard.html', requests=requests)
+    return render_template('admin_dashboard.html', requests=requests, institution_leaves=institution_leaves, active_page='admin_dashboard')
 
 @app.route('/approve_principal/<int:rid>')
 def approve_principal(rid):
