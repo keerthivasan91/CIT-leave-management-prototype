@@ -24,8 +24,8 @@ CREATE TABLE leave_requests (
     end_session ENUM('Forenoon','Afternoon') DEFAULT 'Afternoon',
     reason TEXT,
     days INT,
-    substitute_user_id VARCHAR(50),
-    substitute_status ENUM('Pending','Accepted','Rejected') DEFAULT 'Pending',
+    substitute_user_id VARCHAR(50) NULL,
+    substitute_status ENUM('Pending','Accepted','Rejected','Not Applicable') DEFAULT 'Pending',
     hod_status ENUM('Pending','Approved','Rejected') DEFAULT 'Pending',
     principal_status ENUM('Pending','Approved','Rejected') DEFAULT 'Pending',
     final_status VARCHAR(20) DEFAULT 'Pending',
@@ -35,7 +35,10 @@ CREATE TABLE leave_requests (
     principal_responded_at TIMESTAMP NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (substitute_user_id) REFERENCES users(user_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
+
 
 -- Substitute requests (when someone requests you as substitute)
 CREATE TABLE substitute_requests (
@@ -55,21 +58,71 @@ CREATE TABLE holidays (
     name VARCHAR(100)
 );
 
--- Sample users
+-- Sample Users
 INSERT INTO users (user_id, password, role, name, department) VALUES
-('STF001','1234','Staff','Sam','CSE'),
-('FAC001','1234','faculty','BOB','CSE'),
-('FAC002','abcd','faculty','Ravi Kumar','CSE'),
-('FAC003','pass123','faculty','Dr. Alice Johnson','CSE'),
-('FAC004','pass456','faculty','Prof. Bob Smith','CSE'),
-('FAC005','pass789','faculty','Dr. Carol Davis','ECE'),
-('FAC006','pass101','faculty','Prof. David Wilson','ECE'),
-('FAC007','pass202','faculty','Dr. Emma Brown','ME'),
-('FAC008','pass303','faculty','Prof. Frank Miller','ME'),
-('HODCSE','hodpass','hod','Dr. Meena','CSE'),
-('HODECE','hodpass2','hod','Dr. Rajesh','ECE'),
-('HODME','hodpass3','hod','Dr. Priya','ME'),
-('ADM001','admin','admin','Principal Raj','Admin'); 
+-- ===== CSE Department =====
+('CSEFAC001','pass','faculty','Dr. Alice Johnson','CSE'),
+('CSEFAC002','pass','faculty','Prof. Bob Smith','CSE'),
+('CSEFAC003','pass','faculty','Dr. Carol Davis','CSE'),
+('CSEFAC004','pass','faculty','Prof. David Wilson','CSE'),
+('CSEFAC005','pass','faculty','Dr. Emma Brown','CSE'),
+('CSEFAC006','pass','faculty','Prof. Frank Miller','CSE'),
+('CSEFAC007','pass','faculty','Dr. Grace Lee','CSE'),
+('CSEFAC008','pass','faculty','Prof. Henry Clark','CSE'),
+('CSEFAC009','pass','faculty','Dr. Irene Lewis','CSE'),
+('CSEFAC010','pass','faculty','Prof. John White','CSE'),
+
+('CSESTF001','pass','staff','Staff Rahul','CSE'),
+('CSESTF002','pass','staff','Staff Kavya','CSE'),
+('CSESTF003','pass','staff','Staff Neha','CSE'),
+('CSESTF004','pass','staff','Staff Arjun','CSE'),
+('CSESTF005','pass','staff','Staff Sneha','CSE'),
+
+('HODCSE','pass','hod','Dr. Meena','CSE'),
+
+-- ===== ECE Department =====
+('ECEFAC001','pass','faculty','Dr. Rajesh Kumar','ECE'),
+('ECEFAC002','pass','faculty','Prof. Sunita Sharma','ECE'),
+('ECEFAC003','pass','faculty','Dr. Vikram Rao','ECE'),
+('ECEFAC004','pass','faculty','Prof. Aarti Singh','ECE'),
+('ECEFAC005','pass','faculty','Dr. Kiran Das','ECE'),
+('ECEFAC006','pass','faculty','Prof. Ramesh Patil','ECE'),
+('ECEFAC007','pass','faculty','Dr. Divya Nair','ECE'),
+('ECEFAC008','pass','faculty','Prof. Manish Gupta','ECE'),
+('ECEFAC009','pass','faculty','Dr. Rohit Sen','ECE'),
+('ECEFAC010','pass','faculty','Prof. Lata Iyer','ECE'),
+
+('ECESTF001','pass','staff','Staff Rohan','ECE'),
+('ECESTF002','pass','staff','Staff Nisha','ECE'),
+('ECESTF003','pass','staff','Staff Karthik','ECE'),
+('ECESTF004','pass','staff','Staff Deepa','ECE'),
+('ECESTF005','pass','staff','Staff Manoj','ECE'),
+
+('HODECE','pass','hod','Dr. Rajesh','ECE'),
+
+-- ===== ME Department =====
+('MEFAC001','pass','faculty','Dr. Priya Reddy','ME'),
+('MEFAC002','pass','faculty','Prof. Karthik Iyer','ME'),
+('MEFAC003','pass','faculty','Dr. Nikhil Sharma','ME'),
+('MEFAC004','pass','faculty','Prof. Anjali Das','ME'),
+('MEFAC005','pass','faculty','Dr. Pooja Menon','ME'),
+('MEFAC006','pass','faculty','Prof. Sanjay Rao','ME'),
+('MEFAC007','pass','faculty','Dr. Sneha Verma','ME'),
+('MEFAC008','pass','faculty','Prof. Amit Tiwari','ME'),
+('MEFAC009','pass','faculty','Dr. Veena Kulkarni','ME'),
+('MEFAC010','pass','faculty','Prof. Ritesh Jain','ME'),
+
+('MESTF001','pass','staff','Staff Suresh','ME'),
+('MESTF002','pass','staff','Staff Divya','ME'),
+('MESTF003','pass','staff','Staff Naveen','ME'),
+('MESTF004','pass','staff','Staff Priya','ME'),
+('MESTF005','pass','staff','Staff Tarun','ME'),
+
+('HODME','pass','hod','Dr. Priya','ME'),
+
+-- ===== Principal / Admin =====
+('ADM001','pass','admin','Principal Raj','Admin');
+
 
 -- Sample holidays
 INSERT INTO holidays (date, name) VALUES
