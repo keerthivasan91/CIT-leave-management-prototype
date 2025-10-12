@@ -92,8 +92,8 @@ body {
 }
 
 .logout-btn {
-  background: #e0e0e0;
-  color: #333;
+  background: red;
+  color: white;
   padding: 8px 16px;
   border: none;
   border-radius: 5px;
@@ -102,7 +102,7 @@ body {
 }
 
 .logout-btn:hover {
-  background: #d1d1d1;
+  background: #721c24;
 }
 
 /* ===== LAYOUT STYLES ===== */
@@ -151,6 +151,13 @@ body {
   transform: translateX(5px);
 }
 
+.sidebar a.active {
+  background: #00aaff;
+  color: white;
+  font-weight: 600;
+  transform: translateX(5px);
+  box-shadow: 2px 2px 6px rgba(0, 170, 255, 0.3);
+}
 .main-content {
   flex: 1;
   background: #ffffff;
