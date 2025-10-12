@@ -54,7 +54,7 @@
       <p>No leave records found for leaves you applied.</p>
     </div>
   {% endif %}
-
+  {% if session.user != staff and session.user.role != principal %}
   <!-- Section 2: Leaves Assigned as Substitute -->
   <h3 style="margin-top: 40px; color:#28a745;">Substitute Requests Assigned to You</h3>
   {% if substitute_requests %}
@@ -94,6 +94,6 @@
     </div>
   {% endif %}
 </div>
-
+{% endif %}
 
 {% endblock %}

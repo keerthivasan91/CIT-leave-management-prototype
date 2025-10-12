@@ -31,7 +31,9 @@
         <li><a href="/home">Dashboard</a></li>
         <li><a href="/apply">Apply For Leave</a></li>
         <li><a href="/leave_history">Leave History</a></li>
+        {% if session.role != 'staff' and session.role != 'admin' %}
         <li><a href="/substitute_requests">Substitute Requests</a></li>
+        {% endif %}
         <li><a href="/holiday_calendar">Holiday Calendar</a></li>
         <li><a href="/profile">Profile</a></li>
         {% if session.role == 'hod' %}

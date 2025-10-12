@@ -1,49 +1,63 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>Login - Faculty Leave Management System</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-</head>
-<body>
-  <header class="main-header">
-    <h1>Cambridge Institute of Technology Bangalore</h1>
-    <div class="subtitle">Faculty Leave Management System</div>
-  </header>
-  <div class="login-card">
-    <div class="login-header">
-      <h1>Login</h1>
-    </div>
-    
-    <form method="post" action="/login">
-      <table>
-        <tr>
-          <td><label for="user_id">User ID</label></td>
-          <td><input type="text" id="user_id" name="user_id" placeholder="Enter your User ID" required></td>
-        </tr>
-        <tr>
-          <td><label for="password">Password</label></td>
-          <td><input type="password" id="password" name="password" placeholder="Enter your password" required></td>
-        </tr>
-        <tr>
-          <td><label for="role">Role</label></td>
-          <td>
-            <select id="role" name="role" required>
-              <option value="">Select your role</option>
-              <option value="faculty">Faculty</option>
-              <option value="hod">HOD</option>
-              <option value="admin">Principal</option>
-            </select>
-          </td>
-        </tr>
-      </table>
-      <button type="submit" class="login-btn">Login</button>
-    </form>
 
-    {% if error %}
-      <div class="error">{{ error }}</div>
-    {% endif %}
+<head>
+  <meta charset="utf-8" />
+  <title>Login - Faculty Leave Management System</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="left-section"></div>
+
+    <div class="right-section">
+      <div class="logo-container">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="CIT Logo" class="logo-img" />
+        </div>
+      </div>
+      <h2 class="portal-title">LMS Portal</h2>
+      <div class="login-card">
+        <div class="login-header">
+          <h1>Login</h1>
+        </div>
+        <form method="post" action="/login">
+          <table>
+            <tr>
+              <td><label for="user_id">User ID</label></td>
+              <td>
+                <input type="text" id="user_id" name="user_id" placeholder="Enter your User ID" required />
+              </td>
+            </tr>
+            <tr>
+              <td><label for="password">Password</label></td>
+              <td>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required />
+              </td>
+            </tr>
+            <tr>
+              <td><label for="role">Role</label></td>
+              <td>
+                <select id="role" name="role" required>
+                  <option value="">Select your role</option>
+                  <option value="staff">Staff</option>
+                  <option value="faculty">Faculty</option>
+                  <option value="hod">HOD</option>
+                  <option value="admin">Principal</option>
+                </select>
+              </td>
+            </tr>
+          </table>
+          {% if error %}
+          <span class="error">{{ error }}</span>
+          {% endif %}
+          <button type="submit" class="login-btn">Login</button>
+        </form>
+      </div>
+    </div>
   </div>
 </body>
+
 </html>

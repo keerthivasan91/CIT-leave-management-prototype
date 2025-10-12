@@ -41,7 +41,8 @@
 
             <label>Reason</label>
             <textarea name="reason" placeholder="Enter reason for leave" required></textarea>
-
+            {% if session.user != staff and session.user.role != principal %}
+                
             <label>Alternate Arrangements Made</label>
             <textarea name="alternate" placeholder="Mention alternate arrangements" required></textarea>
 
@@ -54,7 +55,7 @@
             <select name="substitute_user_id" id="substitute_user_id" required>
                 <option value="">Select Department First</option>
             </select>
-
+            {% endif %}
             <button type="submit">Submit Application</button>
         </form>
     </div>
