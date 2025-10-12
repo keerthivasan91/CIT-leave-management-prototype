@@ -7,7 +7,7 @@ CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id VARCHAR(50) UNIQUE,
     password VARCHAR(100),
-    role ENUM('faculty','hod','admin') DEFAULT 'faculty',
+    role ENUM('staff','faculty','hod','admin') DEFAULT 'faculty',
     name VARCHAR(100),
     department VARCHAR(100)
 );
@@ -57,6 +57,7 @@ CREATE TABLE holidays (
 
 -- Sample users
 INSERT INTO users (user_id, password, role, name, department) VALUES
+('STF001','1234','Staff','Sam','CSE'),
 ('FAC001','1234','faculty','BOB','CSE'),
 ('FAC002','abcd','faculty','Ravi Kumar','CSE'),
 ('FAC003','pass123','faculty','Dr. Alice Johnson','CSE'),
