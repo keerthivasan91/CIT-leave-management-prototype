@@ -158,6 +158,21 @@ body {
   transform: translateX(5px);
   box-shadow: 2px 2px 6px rgba(0, 170, 255, 0.3);
 }
+
+.notification {
+  background-color: #ff4757;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  margin-left: 8px;
+  display: inline-block;
+  min-width: 18px;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
 .main-content {
   flex: 1;
   background: #ffffff;
