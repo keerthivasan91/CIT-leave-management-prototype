@@ -46,6 +46,61 @@ def get_staff_by_branch(branch):
 def landing():
     return render_template('login.html')
 
+# Inject notification counts into all templates safely
+@app.context_processor
+def inject_notifications():
+    pending_subs = 0
+    pending_hod = 0
+    pending_principal = 0
+
+    if 'user_id' not in session:
+        return dict(
+            pending_subs=pending_subs,
+            pending_hod=pending_hod,
+            pending_principal=pending_principal
+        )
+
+    cur = mysql.connection.cursor()
+    try:
+        role = session.get('role')
+        user_id = session.get('user_id')
+        dept = session.get('department')
+
+        if role == 'faculty':
+            # Substitute requests where current user needs to respond
+            cur.execute("""
+                SELECT COUNT(*) FROM substitute_requests 
+                WHERE requested_user_id=%s AND status='Pending'
+            """, (user_id,))
+            pending_subs = cur.fetchone()[0] or 0
+
+        elif role == 'hod':
+            # Leaves awaiting HOD approval (either substitute accepted or not applicable)
+            cur.execute("""
+                SELECT COUNT(*) FROM leave_requests 
+                WHERE department=%s 
+                  AND substitute_status IN ('Accepted', 'Not Applicable') 
+                  AND hod_status='Pending'
+            """, (dept,))
+            pending_hod = cur.fetchone()[0] or 0
+
+        elif role in ('principal', 'admin'):
+            # Leaves awaiting principal approval
+            cur.execute("""
+                SELECT COUNT(*) FROM leave_requests 
+                WHERE hod_status='Approved' 
+                  AND principal_status='Pending'
+            """)
+            pending_principal = cur.fetchone()[0] or 0
+    finally:
+        cur.close()
+
+    return dict(
+        pending_subs=pending_subs,
+        pending_hod=pending_hod,
+        pending_principal=pending_principal
+    )
+
 @app.route('/home')
 def home():
     if 'user_id' not in session:
@@ -96,50 +151,74 @@ def apply():
     if 'user_id' not in session:
         return redirect(url_for('landing'))
 
+    user_id = session['user_id']
+    role = session.get('role')
+    department = session.get('department')
+
+    all_faculty = []  # always define it
+
+    cur = mysql.connection.cursor()
+
+    # Populate dropdowns
+    if role == 'staff':
+        # staff → show all faculty/staff except self
+        cur.execute("""
+            SELECT user_id, name, department FROM users
+            WHERE role='staff' AND user_id != %s
+            ORDER BY department
+        """, (user_id,))
+        all_faculty = [{'user_id': row[0], 'name': row[1], 'department': row[2]} for row in cur.fetchall()]
+
+    cur.close()
+
     if request.method == 'POST':
-        user_id = session['user_id']
-        department = session.get('department')
-        role = session.get('role')  # get user role
         leave_type = request.form.get('leave_type', 'Casual')
         start_date = request.form['start_date'] or None
         start_session = request.form.get('start_session', 'Forenoon')
         end_date = request.form['end_date'] or None
         end_session = request.form.get('end_session', 'Afternoon')
         reason = request.form.get('reason','')
-        days = int(request.form.get('days') or 1)
+        try:
+            days = int(request.form.get('days') or 1)
+        except ValueError:
+            days = 1
+
         substitute_user_id = request.form.get('substitute_user_id') or None
 
         # Determine substitute_status
         if role == 'staff' or not substitute_user_id:
             sub_status = 'Not Applicable'
-            substitute_user_id = None  # make sure it's null
+            substitute_user_id = None
         else:
             sub_status = 'Pending'
 
         cur = mysql.connection.cursor()
-        cur.execute("""
-            INSERT INTO leave_requests
-            (user_id, department, leave_type, start_date, start_session, end_date, end_session,
-             reason, days, substitute_user_id, substitute_status)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """, (user_id, department, leave_type, start_date, start_session, end_date, end_session,
-              reason, days, substitute_user_id, sub_status))
-        
-        leave_id = cur.lastrowid
-
-        # Only create substitute request if faculty leave and a substitute is chosen
-        if role == 'faculty' and substitute_user_id:
+        try:
             cur.execute("""
-                INSERT INTO substitute_requests
-                (leave_request_id, requested_user_id)
-                VALUES (%s,%s)
-            """, (leave_id, substitute_user_id))
+                INSERT INTO leave_requests
+                (user_id, department, leave_type, start_date, start_session, end_date, end_session,
+                 reason, days, substitute_user_id, substitute_status)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (user_id, department, leave_type, start_date, start_session, end_date, end_session,
+                  reason, days, substitute_user_id, sub_status))
+            
+            leave_id = cur.lastrowid
 
-        mysql.connection.commit()
-        cur.close()
+            # Only create substitute request if faculty leave and a substitute is chosen
+            if role in ('faculty','hod') and substitute_user_id:
+                cur.execute("""
+                    INSERT INTO substitute_requests
+                    (leave_request_id, requested_user_id)
+                    VALUES (%s,%s)
+                """, (leave_id, substitute_user_id))
+
+            mysql.connection.commit()
+        finally:
+            cur.close()
+
         return redirect(url_for('leave_history'))
 
-    return render_template('apply_leave.html', active_page='apply')
+    return render_template('apply_leave.html', active_page='apply', all_faculty=all_faculty)
 
 
 @app.route('/leave_history', methods=['GET'])
@@ -196,10 +275,10 @@ def leave_history():
         """, (department,))
         department_leaves = cur.fetchall()
 
-    # 4️⃣ Institution leave history (for Principal)
+    # 4️⃣ Institution leave history (for Principal/Admin)
     institution_leaves = []
     departments = []
-    if role == 'admin' or role == 'principal':
+    if role in ('admin', 'principal'):
         # Get all departments
         cur.execute("SELECT DISTINCT department FROM users WHERE role='faculty'")
         departments = [d[0] for d in cur.fetchall()]
@@ -346,7 +425,7 @@ def hod_leave_balance():
            COALESCE(SUM(lr.days),0) AS total_days
     FROM users u
     LEFT JOIN leave_requests lr ON u.user_id=lr.user_id
-    WHERE u.department=%s AND u.role='faculty'
+    WHERE u.department=%s AND u.role In ('faculty','staff')
     GROUP BY u.user_id, u.name
     ORDER BY u.name
 """, (dept,))
