@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>{% block title %}Faculty Leave Management System{% endblock %}</title>
   <link rel="stylesheet" href="/static/style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-  
+
   {% block extra_css %}{% endblock %}
 </head>
+
 <body>
   <nav class="navbar">
     <div class="navbar-content">
@@ -25,29 +27,53 @@
 
   <div class="page-container">
     <aside class="sidebar">
-      <h3 style="text-align: center;">  Menu</h3>
+      <h3 style="text-align: center;"> Menu</h3>
       <ul>
         {% block sidebar_menu %}
         <li><a href="{{ url_for('home') }}" class="{% if active_page == 'home' %}active{% endif %}">Dashboard</a></li>
         {% if session.role != 'admin' %}
         <li><a href="/apply" class="{% if active_page == 'apply' %}active{% endif %}">Apply For Leave</a></li>
         {% endif %}
-        <li><a href="/leave_history" class="{% if active_page == 'leave_history' %}active{% endif %}">Leave History</a></li>
+        <li><a href="/leave_history" class="{% if active_page == 'leave_history' %}active{% endif %}">Leave History</a>
+        </li>
         {% if session.role != 'staff' and session.role != 'admin' %}
-        <li><a href="/substitute_requests" class="{% if active_page == 'substitute_requests' %}active{% endif %}">Substitute Requests</a></li>
+        <li>
+          <a href="/substitute_requests" class="{% if active_page == 'substitute_requests' %}active{% endif %}">
+            Substitute Requests
+            {% if pending_subs > 0 %}
+            <span class="notification">{{ pending_subs }}</span>
+            {% endif %}
+          </a>
+        </li>
         {% endif %}
-        <li><a href="/holiday_calendar" class="{% if active_page == 'holiday_calendar' %}active{% endif %}">Holiday Calendar</a></li>
+        <li><a href="/holiday_calendar" class="{% if active_page == 'holiday_calendar' %}active{% endif %}">Holiday
+            Calendar</a></li>
         <li><a href="/profile" class="{% if active_page == 'profile' %}active{% endif %}">Profile</a></li>
         {% if session.role == 'hod' %}
-        <li><a href="/hod" class="{% if active_page == 'hod' %}active{% endif %}">HOD Approvals</a></li>
-        <li><a href="/hod/leave_balance" class="{% if active_page == 'leave_balance' %}active{% endif %}">Leave Balance</a></li>
+        <li>
+          <a href="/hod" class="{% if active_page == 'hod' %}active{% endif %}">
+            HOD Approvals
+            {% if pending_hod > 0 %}
+            <span class="notification">{{ pending_hod }}</span>
+            {% endif %}
+          </a>
+        </li>
+        <li><a href="/hod/leave_balance" class="{% if active_page == 'leave_balance' %}active{% endif %}">Leave
+            Balance</a></li>
         {% endif %}
         {% if session.role == 'admin' %}
-        <li><a href="/admin" class="{% if active_page == 'admin' %}active{% endif %}">Principal Approvals</a></li>
+        <li>
+          <a href="/admin" class="{% if active_page == 'admin' %}active{% endif %}">
+            Principal Approvals
+            {% if pending_principal > 0 %}
+            <span class="notification">{{ pending_principal }}</span>
+            {% endif %}
+          </a>
+        </li>
         {% endif %}
         {% endblock %}
       </ul>
-      
+
       <div class="stats">
         <p><strong>{{ session.name or 'Guest' }}</strong></p>
         <p>{{ session.role|capitalize if session.role else 'Not logged in' }}</p>
@@ -62,4 +88,5 @@
 
   {% block extra_js %}{% endblock %}
 </body>
+
 </html>
