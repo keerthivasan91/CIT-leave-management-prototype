@@ -20,7 +20,7 @@
 
             <label>Start Date</label>
             <input type="date" name="start_date" required>
-            
+
             <label>Start Session</label>
             <select name="start_session" required>
                 <option>Forenoon</option>
@@ -29,7 +29,7 @@
 
             <label>End Date</label>
             <input type="date" name="end_date" required>
-            
+
             <label>End Session</label>
             <select name="end_session" required>
                 <option>Forenoon</option>
@@ -41,27 +41,38 @@
 
             <label>Reason</label>
             <textarea name="reason" placeholder="Enter reason for leave" required></textarea>
-            {% if session.role != 'staff' and session.role != 'admin' %}
-                
-            <label>Alternate Arrangements Made</label>
-            <textarea name="alternate" placeholder="Mention alternate arrangements" required></textarea>
 
-            <label>Department for Substitute</label>
-            <select name="department_select" id="department_select" required>
-                <option value="">Select Department</option>
-            </select>
+            {% if session.role != 'admin' %}
+                {% if session.role == 'staff' %}
+                    <label>Select Substitute Staff (Optional)</label>
+                    <select name="substitute_user_id" id="substitute_user_id">
+                        <option value="">-- None --</option>
+                        {% for staff in all_faculty %}
+                            <option value="{{ staff.user_id }}">{{ staff.name }} ({{ staff.department }})</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <label>Alternate Arrangements Made</label>
+                    <textarea name="alternate" placeholder="Mention alternate arrangements" required></textarea>
 
-            <label>Substitute Faculty</label>
-            <select name="substitute_user_id" id="substitute_user_id" required>
-                <option value="">Select Department First</option>
-            </select>
+                    <label>Department for Substitute</label>
+                    <select name="department_select" id="department_select">
+                        <option value="">-- Select Department --</option>
+                    </select>
+
+                    <label>Substitute Faculty (Optional)</label>
+                    <select name="substitute_user_id" id="substitute_user_id">
+                        <option value="">-- None --</option>
+                    </select>
+                {% endif %}
             {% endif %}
+
             <button type="submit">Submit Application</button>
         </form>
     </div>
 </div>
 
-
+{% if session.role != 'staff' %}
 <script>
     // Load departments on page load
     fetch('/api/branches')
@@ -77,20 +88,20 @@
         });
 
     // Load staff when department is selected
-    document.getElementById('department_select').addEventListener('change', function() {
+    document.getElementById('department_select').addEventListener('change', function () {
         const department = this.value;
         const staffSelect = document.getElementById('substitute_user_id');
-        
+
         // Clear existing options
-        staffSelect.innerHTML = '<option value="">Select Faculty</option>';
-        
+        staffSelect.innerHTML = '<option value="">-- None --</option>';
+
         if (department) {
             fetch(`/api/staff/${department}`)
                 .then(response => response.json())
                 .then(data => {
                     data.staff.forEach(staff => {
                         const option = document.createElement('option');
-                        option.value = staff.id;
+                        option.value = staff.id; // id matches user_id
                         option.textContent = staff.name;
                         staffSelect.appendChild(option);
                     });
@@ -98,4 +109,6 @@
         }
     });
 </script>
+{% endif %}
+
 {% endblock %}
