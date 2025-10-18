@@ -37,23 +37,12 @@
                 <input type="password" id="password" name="password" placeholder="Enter your password" required />
               </td>
             </tr>
-            <tr>
-              <td><label for="role">Role</label></td>
-              <td>
-                <select id="role" name="role" required>
-                  <option value="">Select your role</option>
-                  <option value="staff">Staff</option>
-                  <option value="faculty">Faculty</option>
-                  <option value="hod">HOD</option>
-                  <option value="admin">Principal</option>
-                </select>
-              </td>
-            </tr>
           </table>
           {% if error %}
           <span class="error">{{ error }}</span>
           {% endif %}
-          <button type="submit" class="login-btn">Login</button>
+          <button type="submit" class="login-btn">Login</button><br>
+          <a href="/forgot_password" style="color:black;">Forgot Password?</a>
         </form>
       </div>
     </div>
