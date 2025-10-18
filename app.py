@@ -140,7 +140,7 @@ def login():
                 session['email'] = user[6]
                 session['phone'] = user[7]
                 return redirect(url_for('home'))
-            error = "Invalid credentials for selected role"
+            error = "Invalid credentials"
     return render_template('login.html', error=error, active_page='login')
 
 @app.route('/logout')
@@ -180,6 +180,7 @@ def apply():
         end_date = request.form['end_date'] or None
         end_session = request.form.get('end_session', 'Afternoon')
         reason = request.form.get('reason','')
+        arrangement_details = request.form.get('alternate','')
         try:
             days = int(request.form.get('days') or 1)
         except ValueError:
@@ -199,20 +200,20 @@ def apply():
             cur.execute("""
                 INSERT INTO leave_requests
                 (user_id, department, leave_type, start_date, start_session, end_date, end_session,
-                 reason, days, substitute_user_id, substitute_status)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                 reason, days, substitute_user_id, substitute_status, arrangement_details)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """, (user_id, department, leave_type, start_date, start_session, end_date, end_session,
-                  reason, days, substitute_user_id, sub_status))
-            
+                  reason, days, substitute_user_id, sub_status, arrangement_details))
+
             leave_id = cur.lastrowid
 
             # Only create substitute request if faculty leave and a substitute is chosen
             if role in ('faculty','hod') and substitute_user_id:
                 cur.execute("""
                     INSERT INTO substitute_requests
-                    (leave_request_id, requested_user_id)
-                    VALUES (%s,%s)
-                """, (leave_id, substitute_user_id))
+                    (leave_request_id, requested_user_id, arrangement_details)
+                    VALUES (%s,%s,%s)
+                """, (leave_id, substitute_user_id, arrangement_details))
 
             mysql.connection.commit()
         finally:
@@ -322,7 +323,7 @@ def substitute_requests():
     user_id = session['user_id']
     cur = mysql.connection.cursor()
     cur.execute("""SELECT sr.id, lr.id as leave_id, lr.user_id, lr.leave_type, lr.start_date, lr.end_date, 
-                   lr.days, lr.reason, sr.status, sr.responded_at, u.name as requester_name
+                   lr.days, lr.reason, lr.arrangement_details, sr.status, sr.responded_at, u.name as requester_name
                    FROM substitute_requests sr
                    JOIN leave_requests lr ON sr.leave_request_id = lr.id
                    JOIN users u ON lr.user_id = u.user_id
