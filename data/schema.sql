@@ -9,7 +9,9 @@ CREATE TABLE users (
     password VARCHAR(100),
     role ENUM('staff','faculty','hod','admin') DEFAULT 'faculty',
     name VARCHAR(100),
-    department VARCHAR(100)
+    department VARCHAR(100),
+    email VARCHAR(100) NULL,
+    phone VARCHAR(15) NULL
 );
 
 -- Leave requests with substitute workflow
@@ -59,69 +61,69 @@ CREATE TABLE holidays (
 );
 
 -- Sample Users
-INSERT INTO users (user_id, password, role, name, department) VALUES
+INSERT INTO users (user_id, password, role, name, department, email, phone) VALUES
 -- ===== CSE Department =====
-('CSEFAC001','pass','faculty','Dr. Alice Johnson','CSE'),
-('CSEFAC002','pass','faculty','Prof. Bob Smith','CSE'),
-('CSEFAC003','pass','faculty','Dr. Carol Davis','CSE'),
-('CSEFAC004','pass','faculty','Prof. David Wilson','CSE'),
-('CSEFAC005','pass','faculty','Dr. Emma Brown','CSE'),
-('CSEFAC006','pass','faculty','Prof. Frank Miller','CSE'),
-('CSEFAC007','pass','faculty','Dr. Grace Lee','CSE'),
-('CSEFAC008','pass','faculty','Prof. Henry Clark','CSE'),
-('CSEFAC009','pass','faculty','Dr. Irene Lewis','CSE'),
-('CSEFAC010','pass','faculty','Prof. John White','CSE'),
+('CSEFAC001','pass','faculty','Dr. Alice Johnson','CSE','alice.johnson@example.com','1234567890'),
+('CSEFAC002','pass','faculty','Prof. Bob Smith','CSE','bob.smith@example.com','1234567891'),
+('CSEFAC003','pass','faculty','Dr. Carol Davis','CSE','carol.davis@example.com','1234567892'),
+('CSEFAC004','pass','faculty','Prof. David Wilson','CSE','david.wilson@example.com','1234567893'),
+('CSEFAC005','pass','faculty','Dr. Emma Brown','CSE','emma.brown@example.com','1234567894'),
+('CSEFAC006','pass','faculty','Prof. Frank Miller','CSE','frank.miller@example.com','1234567895'),
+('CSEFAC007','pass','faculty','Dr. Grace Lee','CSE','grace.lee@example.com','1234567896'),
+('CSEFAC008','pass','faculty','Prof. Henry Clark','CSE','henry.clark@example.com','1234567897'),
+('CSEFAC009','pass','faculty','Dr. Irene Lewis','CSE','irene.lewis@example.com','1234567898'),
+('CSEFAC010','pass','faculty','Prof. John White','CSE','john.white@example.com','1234567899'),
 
-('CSESTF001','pass','staff','Staff Rahul','CSE'),
-('CSESTF002','pass','staff','Staff Kavya','CSE'),
-('CSESTF003','pass','staff','Staff Neha','CSE'),
-('CSESTF004','pass','staff','Staff Arjun','CSE'),
-('CSESTF005','pass','staff','Staff Sneha','CSE'),
+('CSESTF001','pass','staff','Staff Rahul','CSE','rahul@example.com','1234567890'),
+('CSESTF002','pass','staff','Staff Kavya','CSE','kavya@example.com','1234567891'),
+('CSESTF003','pass','staff','Staff Neha','CSE','neha@example.com','1234567892'),
+('CSESTF004','pass','staff','Staff Arjun','CSE','arjun@example.com','1234567893'),
+('CSESTF005','pass','staff','Staff Sneha','CSE','sneha@example.com','1234567894'),
 
-('HODCSE','pass','hod','Dr. Meena','CSE'),
+('HODCSE','pass','hod','Dr. Meena','CSE','meena@example.com','1234567895'),
 
 -- ===== ECE Department =====
-('ECEFAC001','pass','faculty','Dr. Rajesh Kumar','ECE'),
-('ECEFAC002','pass','faculty','Prof. Sunita Sharma','ECE'),
-('ECEFAC003','pass','faculty','Dr. Vikram Rao','ECE'),
-('ECEFAC004','pass','faculty','Prof. Aarti Singh','ECE'),
-('ECEFAC005','pass','faculty','Dr. Kiran Das','ECE'),
-('ECEFAC006','pass','faculty','Prof. Ramesh Patil','ECE'),
-('ECEFAC007','pass','faculty','Dr. Divya Nair','ECE'),
-('ECEFAC008','pass','faculty','Prof. Manish Gupta','ECE'),
-('ECEFAC009','pass','faculty','Dr. Rohit Sen','ECE'),
-('ECEFAC010','pass','faculty','Prof. Lata Iyer','ECE'),
+('ECEFAC001','pass','faculty','Dr. Rajesh Kumar','ECE','rajesh.kumar@example.com','1234567890'),
+('ECEFAC002','pass','faculty','Prof. Sunita Sharma','ECE','sunita.sharma@example.com','1234567891'),
+('ECEFAC003','pass','faculty','Dr. Vikram Rao','ECE','vikram.rao@example.com','1234567892'),
+('ECEFAC004','pass','faculty','Prof. Aarti Singh','ECE','aarti.singh@example.com','1234567893'),
+('ECEFAC005','pass','faculty','Dr. Kiran Das','ECE','kiran.das@example.com','1234567894'),
+('ECEFAC006','pass','faculty','Prof. Ramesh Patil','ECE','ramesh.patil@example.com','1234567895'),
+('ECEFAC007','pass','faculty','Dr. Divya Nair','ECE','divya.nair@example.com','1234567896'),
+('ECEFAC008','pass','faculty','Prof. Manish Gupta','ECE','manish.gupta@example.com','1234567897'),
+('ECEFAC009','pass','faculty','Dr. Rohit Sen','ECE','rohit.sen@example.com','1234567898'),
+('ECEFAC010','pass','faculty','Prof. Lata Iyer','ECE','lata.iyer@example.com','1234567899'),
 
-('ECESTF001','pass','staff','Staff Rohan','ECE'),
-('ECESTF002','pass','staff','Staff Nisha','ECE'),
-('ECESTF003','pass','staff','Staff Karthik','ECE'),
-('ECESTF004','pass','staff','Staff Deepa','ECE'),
-('ECESTF005','pass','staff','Staff Manoj','ECE'),
+('ECESTF001','pass','staff','Staff Rohan','ECE','rohan@example.com','1234567890'),
+('ECESTF002','pass','staff','Staff Nisha','ECE','nisha@example.com','1234567891'),
+('ECESTF003','pass','staff','Staff Karthik','ECE','karthik@example.com','1234567892'),
+('ECESTF004','pass','staff','Staff Deepa','ECE','deepa@example.com','1234567893'),
+('ECESTF005','pass','staff','Staff Manoj','ECE','manoj@example.com','1234567894'),
 
-('HODECE','pass','hod','Dr. Rajesh','ECE'),
+('HODECE','pass','hod','Dr. Rajesh','ECE','rajesh@example.com','1234567895'),
 
 -- ===== ME Department =====
-('MEFAC001','pass','faculty','Dr. Priya Reddy','ME'),
-('MEFAC002','pass','faculty','Prof. Karthik Iyer','ME'),
-('MEFAC003','pass','faculty','Dr. Nikhil Sharma','ME'),
-('MEFAC004','pass','faculty','Prof. Anjali Das','ME'),
-('MEFAC005','pass','faculty','Dr. Pooja Menon','ME'),
-('MEFAC006','pass','faculty','Prof. Sanjay Rao','ME'),
-('MEFAC007','pass','faculty','Dr. Sneha Verma','ME'),
-('MEFAC008','pass','faculty','Prof. Amit Tiwari','ME'),
-('MEFAC009','pass','faculty','Dr. Veena Kulkarni','ME'),
-('MEFAC010','pass','faculty','Prof. Ritesh Jain','ME'),
+('MEFAC001','pass','faculty','Dr. Priya Reddy','ME','priya.reddy@example.com','1234567890'),
+('MEFAC002','pass','faculty','Prof. Karthik Iyer','ME','karthik.iyer@example.com','1234567891'),
+('MEFAC003','pass','faculty','Dr. Nikhil Sharma','ME','nikhil.sharma@example.com','1234567892'),
+('MEFAC004','pass','faculty','Prof. Anjali Das','ME','anjali.das@example.com','1234567893'),
+('MEFAC005','pass','faculty','Dr. Pooja Menon','ME','pooja.menon@example.com','1234567894'),
+('MEFAC006','pass','faculty','Prof. Sanjay Rao','ME','sanjay.rao@example.com','1234567895'),
+('MEFAC007','pass','faculty','Dr. Sneha Verma','ME','sneha.verma@example.com','1234567896'),
+('MEFAC008','pass','faculty','Prof. Amit Tiwari','ME','amit.tiwari@example.com','1234567897'),
+('MEFAC009','pass','faculty','Dr. Veena Kulkarni','ME','veena.kulkarni@example.com','1234567898'),
+('MEFAC010','pass','faculty','Prof. Ritesh Jain','ME','ritesh.jain@example.com','1234567899'),
 
-('MESTF001','pass','staff','Staff Suresh','ME'),
-('MESTF002','pass','staff','Staff Divya','ME'),
-('MESTF003','pass','staff','Staff Naveen','ME'),
-('MESTF004','pass','staff','Staff Priya','ME'),
-('MESTF005','pass','staff','Staff Tarun','ME'),
+('MESTF001','pass','staff','Staff Suresh','ME','suresh@example.com','1234567890'),
+('MESTF002','pass','staff','Staff Divya','ME','divya@example.com','1234567891'),
+('MESTF003','pass','staff','Staff Naveen','ME','naveen@example.com','1234567892'),
+('MESTF004','pass','staff','Staff Priya','ME','priya@example.com','1234567893'),
+('MESTF005','pass','staff','Staff Tarun','ME','tarun@example.com','1234567894'),
 
-('HODME','pass','hod','Dr. Priya','ME'),
+('HODME','pass','hod','Dr. Priya','ME','priya.hod@example.com','1234567895'),
 
 -- ===== Principal / Admin =====
-('ADM001','pass','admin','Principal Raj','Admin');
+('ADM001','pass','admin','Principal Raj','Admin','raj@example.com','1234567890');
 
 
 -- Sample holidays
