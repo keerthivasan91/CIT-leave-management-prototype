@@ -27,6 +27,7 @@ CREATE TABLE leave_requests (
     reason TEXT,
     days INT,
     substitute_user_id VARCHAR(50) NULL,
+    arrangement_details TEXT NULL,
     substitute_status ENUM('Pending','Accepted','Rejected','Not Applicable') DEFAULT 'Pending',
     hod_status ENUM('Pending','Approved','Rejected') DEFAULT 'Pending',
     principal_status ENUM('Pending','Approved','Rejected') DEFAULT 'Pending',
@@ -47,6 +48,7 @@ CREATE TABLE substitute_requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     leave_request_id INT,
     requested_user_id VARCHAR(50),
+    arrangement_details TEXT NULL,
     status ENUM('Pending','Accepted','Rejected') DEFAULT 'Pending',
     responded_at TIMESTAMP NULL,
     FOREIGN KEY (leave_request_id) REFERENCES leave_requests(id),
@@ -123,7 +125,8 @@ INSERT INTO users (user_id, password, role, name, department, email, phone) VALU
 ('HODME','pass','hod','Dr. Priya','ME','priya.hod@example.com','1234567895'),
 
 -- ===== Principal / Admin =====
-('ADM001','pass','admin','Principal Raj','Admin','raj@example.com','1234567890');
+('ADM001','pass','admin','Principal Raj','Management','raj@example.com','1234567890'),
+('ADM002','pass','admin','Registrar Ram','Management','ram@example.com','1234567891');
 
 
 -- Sample holidays
