@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, flash, render_template, request, redirect, url_for, session, jsonify
 # Windows-friendly MySQL driver shim: allow PyMySQL to satisfy MySQLdb
 try:
     import pymysql  # type: ignore
@@ -122,14 +122,14 @@ def login():
     if request.method == 'POST':
         user_id = request.form['user_id'].strip()
         password = request.form['password']
-        role = request.form['role']
+        #role = request.form['role']
 
-        if not role:
-            error = "Please select a role"
+        if not user_id or not password:
+            error = "Please enter both User ID and Password"
         else:
             cur = mysql.connection.cursor()
-            cur.execute("SELECT id,user_id,password,role,name,department FROM users WHERE user_id=%s AND password=%s AND role=%s",
-                        (user_id, password, role))
+            cur.execute("SELECT id,user_id,password,role,name,department,email,phone FROM users WHERE user_id=%s AND password=%s",
+                        (user_id, password))
             user = cur.fetchone()
             cur.close()
             if user:
@@ -137,6 +137,8 @@ def login():
                 session['role'] = user[3]
                 session['name'] = user[4]
                 session['department'] = user[5]
+                session['email'] = user[6]
+                session['phone'] = user[7]
                 return redirect(url_for('home'))
             error = "Invalid credentials for selected role"
     return render_template('login.html', error=error, active_page='login')
@@ -386,6 +388,33 @@ def profile():
     stats = cur.fetchone()
     cur.close()
     return render_template('profile.html', stats=stats, active_page='profile')
+
+@app.route('/change_password', methods=['GET','POST'])
+def change_password():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+
+        if new_password != confirm_password:
+            flash("New passwords do not match.", "error")
+            return redirect(url_for('change_password'))
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT password FROM users WHERE user_id=%s", (session['user_id'],))
+        user = cur.fetchone()
+        password = user[0] if user else None
+        if user and password == current_password:
+            cur.execute("UPDATE users SET password=%s WHERE user_id=%s", (new_password, session['user_id']))
+            mysql.connection.commit()
+            flash("Password changed successfully.", "success")
+        else:
+            flash("Current password is incorrect.", "error")
+        cur.close()
+        return redirect(url_for('change_password'))
+    return render_template('change_password.html', active_page='change_password')
 
 # HOD dashboard - same UI but extra Approve tab
 @app.route('/hod')
