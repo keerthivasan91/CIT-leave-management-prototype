@@ -4,9 +4,22 @@
 
 {% block content %}
 <div class="history-container" style="max-width: 800px;">
-  <h2>Profile & Leave Statistics</h2>
-
-  <div class="table-wrapper">
+  <h2>Profile</h2>
+  <div class="profile-card">
+    <div class="profile-photo">
+      <div class="img-placeholder">
+        <img src="{{ url_for('static', filename='profile-placeholder.png') }}" alt="Profile Photo">
+      </div>
+    </div>
+    <p><strong>Name:</strong> {{ session.name }}</p>
+    <p><strong>User ID:</strong> {{ session.user_id }}</p>
+    <p><strong>Department:</strong> {{ session.department }}</p>
+    <p><strong>Email:</strong> {{ session.email }}</p>
+    <p><strong>Phone:</strong> {{ session.phone }}</p>
+    <p><strong>Role:</strong> {{ session.role | capitalize }}</p><br>
+    <a href="/change_password" class="change-btn"><strong>Change Password</strong></a><br>
+  </div><br>
+  <!--  <div class="table-wrapper">
     <table class="history-table">
       <thead>
         <tr>
@@ -29,6 +42,5 @@
     </table>
   </div>
 </div>
-
-
+<br> -->
 {% endblock %}
