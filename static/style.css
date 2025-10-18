@@ -482,6 +482,32 @@ div[style*="Principal Approvals"]:hover {
   transform: translateY(-3px);
 }
 
+.change-btn {
+  background:#00aaff;
+  color: white;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+.change-btn:hover {
+  background: #008ecc;
+}
+
+.pass {
+  display: block;
+  width: 40%;
+  background: #28a745;
+  color: #fff;
+  border: 1px solid #28a745;
+  border-radius: 5px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
 /* ===== RESPONSIVE STYLES ===== */
 @media (max-width: 768px) {
 
